@@ -22,9 +22,7 @@ function printResults(result: any): void {
   console.log('=== WALLET SCAN RESULT ===\n');
 
   for (const balance of result.balances) {
-    console.log(
-      `${balance.chain} (${balance.nativeSymbol}) → ${balance.balance}`
-    );
+    console.log(`${balance.chain} (${balance.nativeSymbol}) → ${balance.balance}`);
   }
 
   console.log('\n==========================\n');

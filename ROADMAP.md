@@ -91,23 +91,24 @@ This is a two-person system.
 
 Validated from the repo and current working tree on 2026-04-09:
 
-- `git status --short`: clean working tree
+- `git status --short`: `?? AGENTS.md`
 - Active branch: `feature/foundation-multichain-core`
-- Latest commit: `a85b05c feat: add CLI entry point and provider factory for Ethereum and other chains`
+- Latest commit: `f8ad3ba feat: implement wallet scanning functionality with balance retrieval and CLI argument parsing`
 - `.env.example` exists and matches the current multi-chain RPC layout
-- `pnpm exec tsc --noEmit` passes
 - No test runner or test files exist yet
 
 Current docs status:
 
 - `ROADMAP.md` exists and is now aligned to the current codebase
+- `AGENTS.md` exists
 - `README.md` is missing
 - Architecture and operator docs are still missing
 
 Current runtime verification:
 
 - CLI bootstrap exists at `src/cli/index.ts`
-- Current runtime path validates env vars, builds providers, and fetches the latest Ethereum block
+- CLI requires `--wallet` and validates the address format
+- Native balance scanner iterates the supported chains and prints balances
 - End-to-end runtime against live RPC endpoints was not verified in this review
 
 Implemented APIs / Interfaces:
@@ -117,75 +118,75 @@ Implemented APIs / Interfaces:
 - `CHAINS` registry with chain IDs, names, and native currencies
 - `ProviderFactory` for per-chain primary and fallback `JsonRpcProvider` construction
 - Zod-based env schema parsing in `src/config/env.ts`
+- `WalletScanResult` and `ChainBalanceResult` in `src/core/models/balance-result.ts`
 
 Implemented core services / modules:
 
 - chain registry in `src/core/chains/chains.ts`
 - environment validation in `src/config/env.ts`
 - provider bootstrap in `src/core/providers/provider-factory.ts`
-- minimal CLI entry point in `src/cli/index.ts`
+- CLI entry point in `src/cli/index.ts`
+- CLI arg parsing in `src/cli/parse-args.ts`
+- native balance scanner in `src/scanners/balances/native-balance-scanner.ts`
 
 Remaining visible gaps:
 
-- no wallet scanning module yet
-- no token balance ingestion yet
+- no ERC-20 token balance ingestion yet
 - no protocol adapters yet
 - no claim execution engine yet
-- no normalized result schema yet
 - no structured logging usage yet, even though `pino` is installed
-- no retry, fallback-selection, or failure-isolation behavior yet
+- no retry, fallback-selection, or failure-isolation behavior yet (`getProvider` returns primary only)
 - no tests, fixtures, or CI validation yet
 
 ## Current System Direction
 
-The project is no longer at a blank-slate stage. It has a real multi-chain foundation in place:
+The project is no longer at a blank-slate stage. It has a real multi-chain foundation plus a first native-balance scan pipeline:
 
 - TypeScript CLI scaffolding is set up
 - environment validation is strict and fail-fast
 - supported chains are explicitly modeled
 - provider bootstrap is centralized
+- native balance scanning across chains is working
 
 What is still missing is the actual product surface:
 
-- wallet scanning
-- normalized outputs
+- ERC-20 balance ingestion
 - protocol-specific discovery
 - safe execution flows
 - reliability and observability layers
 
-The next milestone should build on the current foundation rather than redoing it. The highest-value path is to turn the existing chain registry and provider factory into a real scan pipeline that can read wallet state across the supported chains and emit normalized results.
+The next milestone should extend the existing scan pipeline (ERC-20, protocol adapters) and harden it with logging, retries, and provider failover.
 
 ## Git Status And Direction
 
 Current git status:
 
 - Active branch: `feature/foundation-multichain-core`
-- Working tree: clean
-- Latest commit before this roadmap refresh: `a85b05c feat: add CLI entry point and provider factory for Ethereum and other chains`
+- Working tree: `?? AGENTS.md`
+- Latest commit before this roadmap refresh: `f8ad3ba feat: implement wallet scanning functionality with balance retrieval and CLI argument parsing`
 
 Direction from here:
 
-1. Add wallet scan inputs and result schemas
-2. Implement multi-chain native balance scanning
-3. Extend scanning to ERC-20 balances and claim targets
-4. Add logging, retry handling, and meaningful operator output
-5. Build protocol adapters and execution safeguards on top of the scan layer
+1. Extend scanning to ERC-20 balances and claim targets
+2. Add logging, retry handling, and meaningful operator output
+3. Add provider failover and failure isolation
+4. Build protocol adapters and execution safeguards on top of the scan layer
 
 ## Reality-Checked Phase Status
 
-| Phase | Name | Status | Notes |
-|---|---|---|---|
-| 0 | Foundation | Complete | Project scaffold, TypeScript setup, env validation, CLI bootstrap, chain registry, and provider factory are in place |
-| 1 | Core Platform | In Progress | Multi-chain provider infrastructure exists, but wallet scanning and normalized outputs are not implemented yet |
-| 2 | Main Product Surface | Not Started | No airdrop detection, rewards discovery, or claimability logic yet |
-| 3 | Stabilization | Not Started | No retry, rate limiting, fallback failover logic, or structured runtime logging yet |
-| 4 | Execution Engine | Not Started | No transaction builder, gas checks, or claim execution pipeline yet |
-| 5 | Expansion Area A | Not Started | No additional protocols or chain expansion work yet |
-| 6 | Expansion Area B | Not Started | No advanced extraction or prioritization systems yet |
-| 7 | Automation / Lifecycle | Not Started | No scheduling or recurring operations workflow yet |
-| 8 | Testing & Data Quality | Not Started | Typecheck passes, but no tests or fixtures exist |
-| 9 | Hardening & Operations | Not Started | No monitoring, operator controls, or production logging yet |
-| 10 | Future / Advanced Work | Not Started | No AI-assisted ranking or opportunity scoring yet |
+| Phase | Name                   | Status      | Notes                                                                                                                |
+| ----- | ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
+| 0     | Foundation             | Complete    | Project scaffold, TypeScript setup, env validation, CLI bootstrap, chain registry, and provider factory are in place |
+| 1     | Core Platform          | In Progress | Native balance scanning and result schema exist; ERC-20 scanning and protocol adapters are missing                   |
+| 2     | Main Product Surface   | Not Started | No airdrop detection, rewards discovery, or claimability logic yet                                                   |
+| 3     | Stabilization          | Not Started | No retry, rate limiting, fallback failover logic, or structured runtime logging yet                                  |
+| 4     | Execution Engine       | Not Started | No transaction builder, gas checks, or claim execution pipeline yet                                                  |
+| 5     | Expansion Area A       | Not Started | No additional protocols or chain expansion work yet                                                                  |
+| 6     | Expansion Area B       | Not Started | No advanced extraction or prioritization systems yet                                                                 |
+| 7     | Automation / Lifecycle | Not Started | No scheduling or recurring operations workflow yet                                                                   |
+| 8     | Testing & Data Quality | Not Started | No tests or fixtures exist                                                                                           |
+| 9     | Hardening & Operations | Not Started | No monitoring, operator controls, or production logging yet                                                          |
+| 10    | Future / Advanced Work | Not Started | No AI-assisted ranking or opportunity scoring yet                                                                    |
 
 ## Next Milestone Checklist
 
@@ -197,9 +198,9 @@ Direction from here:
 - [x] Define supported chain list for v1
 - [x] Build chain registry
 - [x] Build provider factory
-- [ ] Build first multi-chain wallet scanner
-- [ ] Add normalized scan result schema
-- [ ] Log operator-readable scan output
+- [x] Build first multi-chain wallet scanner
+- [x] Add normalized scan result schema
+- [x] Log operator-readable scan output
 - [ ] Verify scans across all supported chains
 
 ### Phase 1 Completion (Core Platform)
@@ -209,11 +210,11 @@ Direction from here:
 - [x] RPC configuration validation
 - [x] CLI entry point
 - [ ] Wallet input model
-- [ ] Multi-chain wallet scanning module
-- [ ] Native token balance detection per chain
+- [x] Multi-chain wallet scanning module
+- [x] Native token balance detection per chain
 - [ ] ERC-20 token balance detection per chain
-- [ ] Normalized result schema
-- [ ] Operator-readable output formatter
+- [x] Normalized result schema
+- [x] Operator-readable output formatter
 
 ### Phase 2 Kickoff (Main Product Surface)
 
