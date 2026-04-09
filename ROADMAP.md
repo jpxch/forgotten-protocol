@@ -1,4 +1,4 @@
-# Forgotten Protocols Roadmap
+# Forgotten Protocol Roadmap
 
 Last updated: 2026-04-09
 
@@ -6,7 +6,7 @@ Last updated: 2026-04-09
 
 This file is the source-of-truth context for ongoing work on this project.
 
-- `forgotten-protocols` is a blockchain value-extraction system focused on discovering and claiming unclaimed assets across EVM chains.
+- `forgotten-protocol` is a blockchain value-extraction system focused on discovering and claiming unclaimed assets across EVM chains.
 - It is not a trading bot, not a wallet, and not a general DeFi dashboard.
 - Scope includes:
   - scanning wallets for unclaimed airdrops, dust, and forgotten balances
@@ -18,46 +18,43 @@ This file is the source-of-truth context for ongoing work on this project.
 ## Deployment Target (Current)
 
 - Primary runtime target is a Node.js + TypeScript CLI system running inside the Continuum vault.
-- Execution happens on:
-  - Builder machine (development + deployment)
-  - Operator machine (monitoring + execution triggers)
-- Runtime configuration remains environment-driven and chain-aware:
-  - `RPC_URL_ETHEREUM`
-  - `RPC_URL_ARBITRUM`
-  - `RPC_URL_BASE`
-  - `RPC_URL_OPTIMISM`
-  - `RPC_URL_POLYGON`
+- Runtime is environment-driven and chain-aware.
+- Current configuration shape requires:
   - `PRIVATE_KEY`
+  - `RPC_URL_ETHEREUM_PRIMARY`
+  - `RPC_URL_ETHEREUM_FALLBACK`
+  - `RPC_URL_ARBITRUM_PRIMARY`
+  - `RPC_URL_ARBITRUM_FALLBACK`
+  - `RPC_URL_OPTIMISM_PRIMARY`
+  - `RPC_URL_OPTIMISM_FALLBACK`
+  - `RPC_URL_BASE_PRIMARY`
+  - `RPC_URL_BASE_FALLBACK`
+  - `RPC_URL_POLYGON_PRIMARY`
+  - `RPC_URL_POLYGON_FALLBACK`
 - Initial chain scope is multi-chain from day 1 across selected EVM networks.
-- Code must remain portable across VM, mini PC, and future cloud deployment.
-- The system must support:
-  - chain-specific providers
-  - chain-specific protocol support
-  - normalized cross-chain output
+- Code should remain portable across local development, operator hardware, and future hosted deployment.
 
-## Supported Chains (v1 Target)
-
-Initial supported chains for v1:
+## Supported Chains (Current v1 Scope)
 
 - Ethereum
 - Arbitrum
-- Base
 - Optimism
+- Base
 - Polygon
 
 Selection criteria:
 
 - strong airdrop / rewards ecosystem
-- low enough cost for practical claiming
+- practical claiming costs
 - broad wallet activity and protocol overlap
-- compatible EVM execution model
+- shared EVM execution model
 - accessible RPC infrastructure
 
 Non-goals for v1:
 
 - non-EVM chains
 - bridge automation
-- cross-chain message execution
+- cross-chain messaging
 - Solana-specific or Cosmos-specific protocol logic
 
 ## Operator Model
@@ -92,113 +89,133 @@ This is a two-person system.
 
 ## Verified Status Snapshot
 
-Validated from the repo and current working tree on 2026-04-09 unless otherwise noted:
+Validated from the repo and current working tree on 2026-04-09:
 
-- `git status --short` is [TO BE VERIFIED]
-- Active branch is `[main]`
-- `git log -1 --oneline` reports `[TO BE FILLED]`
-- `.env.example` does not yet exist and must be created
-- No core modules are implemented yet (fresh start)
-- No shared services exist yet
-- No tests exist yet
+- `git status --short`: clean working tree
+- Active branch: `feature/foundation-multichain-core`
+- Latest commit: `a85b05c feat: add CLI entry point and provider factory for Ethereum and other chains`
+- `.env.example` exists and matches the current multi-chain RPC layout
+- `pnpm exec tsc --noEmit` passes
+- No test runner or test files exist yet
 
 Current docs status:
-- ROADMAP.md initialized
-- All other docs missing (README, ARCHITECTURE, etc.)
+
+- `ROADMAP.md` exists and is now aligned to the current codebase
+- `README.md` is missing
+- Architecture and operator docs are still missing
 
 Current runtime verification:
-- No runnable system yet
 
-Current local verification:
-- No tests configured
-
-Remaining visible gaps:
-- Entire system architecture not implemented
-- No scanner logic
-- No execution engine
-- No logging or operator interface
+- CLI bootstrap exists at `src/cli/index.ts`
+- Current runtime path validates env vars, builds providers, and fetches the latest Ethereum block
+- End-to-end runtime against live RPC endpoints was not verified in this review
 
 Implemented APIs / Interfaces:
 
-- None yet
+- `ChainKey` union for supported chains
+- `ChainConfig` interface
+- `CHAINS` registry with chain IDs, names, and native currencies
+- `ProviderFactory` for per-chain primary and fallback `JsonRpcProvider` construction
+- Zod-based env schema parsing in `src/config/env.ts`
 
 Implemented core services / modules:
 
-- None yet
+- chain registry in `src/core/chains/chains.ts`
+- environment validation in `src/config/env.ts`
+- provider bootstrap in `src/core/providers/provider-factory.ts`
+- minimal CLI entry point in `src/cli/index.ts`
 
-Current system direction:
+Remaining visible gaps:
 
-This project is starting from zero with a clear goal: build a modular, chain-aware scanning and execution system capable of discovering and extracting value from blockchain activity across multiple EVM networks from day 1.
+- no wallet scanning module yet
+- no token balance ingestion yet
+- no protocol adapters yet
+- no claim execution engine yet
+- no normalized result schema yet
+- no structured logging usage yet, even though `pino` is installed
+- no retry, fallback-selection, or failure-isolation behavior yet
+- no tests, fixtures, or CI validation yet
 
-The immediate focus is establishing a clean architecture with:
+## Current System Direction
 
-- shared core infrastructure
-- per-chain provider management
-- scanner modules that can execute across multiple chains
-- normalized result models for operator review
-- execution pipelines that remain chain-aware and safety-checked
+The project is no longer at a blank-slate stage. It has a real multi-chain foundation in place:
 
-The first implementation target is not a single-chain prototype. The first implementation target is a production-grade multi-chain base that can scan wallets across selected EVM chains using a unified interface.
+- TypeScript CLI scaffolding is set up
+- environment validation is strict and fail-fast
+- supported chains are explicitly modeled
+- provider bootstrap is centralized
+
+What is still missing is the actual product surface:
+
+- wallet scanning
+- normalized outputs
+- protocol-specific discovery
+- safe execution flows
+- reliability and observability layers
+
+The next milestone should build on the current foundation rather than redoing it. The highest-value path is to turn the existing chain registry and provider factory into a real scan pipeline that can read wallet state across the supported chains and emit normalized results.
 
 ## Git Status And Direction
 
 Current git status:
 
-- Active branch: `main`
-- Working tree: clean (expected for fresh start)
-- Latest commit before this roadmap refresh: `[TO BE FILLED]`
+- Active branch: `feature/foundation-multichain-core`
+- Working tree: clean
+- Latest commit before this roadmap refresh: `a85b05c feat: add CLI entry point and provider factory for Ethereum and other chains`
 
-Required direction:
+Direction from here:
 
-1. Initialize project structure (core / scanners / executors / utils / config / cli)
-2. Implement chain registry and provider factory
-3. Build multi-chain wallet scanner (native balance + token balance support)
-4. Add protocol adapters for claim/reward discovery
-5. Implement execution engine for safe multi-chain claiming
+1. Add wallet scan inputs and result schemas
+2. Implement multi-chain native balance scanning
+3. Extend scanning to ERC-20 balances and claim targets
+4. Add logging, retry handling, and meaningful operator output
+5. Build protocol adapters and execution safeguards on top of the scan layer
 
 ## Reality-Checked Phase Status
 
 | Phase | Name | Status | Notes |
 |---|---|---|---|
-| 0 | Foundation | In Progress | Project initialization + multi-chain architecture setup |
-| 1 | Core Platform | Not Started | Chain registry, provider factory, wallet scanning, normalized outputs |
-| 2 | Main Product Surface | Not Started | Multi-chain airdrop + reward detection |
-| 3 | Stabilization | Not Started | Error handling, retries, RPC fallback, chain failure isolation |
-| 4 | Consumer Contracts | Not Started | Execution + claiming across supported chains |
-| 5 | Expansion Area A | Not Started | More protocols, more chains, richer adapters |
-| 6 | Expansion Area B | Not Started | MEV / advanced extraction |
-| 7 | Automation / Lifecycle | Not Started | Scheduled scans + recurring execution workflows |
-| 8 | Testing & Data Quality | Not Started | Validation + correctness + chain-specific test coverage |
-| 9 | Hardening & Operations | Not Started | Logging + monitoring + operator controls |
-| 10 | Future / Advanced Work | Not Started | AI-assisted scanning + opportunity ranking |
+| 0 | Foundation | Complete | Project scaffold, TypeScript setup, env validation, CLI bootstrap, chain registry, and provider factory are in place |
+| 1 | Core Platform | In Progress | Multi-chain provider infrastructure exists, but wallet scanning and normalized outputs are not implemented yet |
+| 2 | Main Product Surface | Not Started | No airdrop detection, rewards discovery, or claimability logic yet |
+| 3 | Stabilization | Not Started | No retry, rate limiting, fallback failover logic, or structured runtime logging yet |
+| 4 | Execution Engine | Not Started | No transaction builder, gas checks, or claim execution pipeline yet |
+| 5 | Expansion Area A | Not Started | No additional protocols or chain expansion work yet |
+| 6 | Expansion Area B | Not Started | No advanced extraction or prioritization systems yet |
+| 7 | Automation / Lifecycle | Not Started | No scheduling or recurring operations workflow yet |
+| 8 | Testing & Data Quality | Not Started | Typecheck passes, but no tests or fixtures exist |
+| 9 | Hardening & Operations | Not Started | No monitoring, operator controls, or production logging yet |
+| 10 | Future / Advanced Work | Not Started | No AI-assisted ranking or opportunity scoring yet |
 
 ## Next Milestone Checklist
 
-### Suggested Immediate Next Step
+### Immediate Next Step
 
-- [ ] Initialize project folder structure
-- [ ] Create `.env.example`
-- [ ] Setup TypeScript + Ethers.js
-- [ ] Define supported chain list for v1
-- [ ] Build chain registry
-- [ ] Build provider factory
+- [x] Initialize project folder structure
+- [x] Create `.env.example`
+- [x] Set up TypeScript + Ethers.js
+- [x] Define supported chain list for v1
+- [x] Build chain registry
+- [x] Build provider factory
 - [ ] Build first multi-chain wallet scanner
-- [ ] Log normalized detected balances
-- [ ] Output chain-grouped results for operator
+- [ ] Add normalized scan result schema
+- [ ] Log operator-readable scan output
+- [ ] Verify scans across all supported chains
 
-### Phase 1 Kickoff (Core Platform)
+### Phase 1 Completion (Core Platform)
 
-- [ ] Chain registry
-- [ ] Provider factory
-- [ ] RPC configuration validation
+- [x] Chain registry
+- [x] Provider factory
+- [x] RPC configuration validation
+- [x] CLI entry point
+- [ ] Wallet input model
 - [ ] Multi-chain wallet scanning module
 - [ ] Native token balance detection per chain
-- [ ] ERC20 token balance detection per chain
+- [ ] ERC-20 token balance detection per chain
 - [ ] Normalized result schema
-- [ ] CLI entry point
 - [ ] Operator-readable output formatter
 
-### Phase 2 Closure (Main Product Surface)
+### Phase 2 Kickoff (Main Product Surface)
 
 - [ ] Multi-chain airdrop detection engine
 - [ ] Known protocol scanning adapters
@@ -212,8 +229,8 @@ Required direction:
 - [ ] Retry logic
 - [ ] Rate limiting
 - [ ] Error classification
-- [ ] Structured logging system
-- [ ] RPC fallback support
+- [ ] Structured logging integration
+- [ ] Primary/fallback provider failover behavior
 - [ ] Chain failure isolation
 - [ ] Partial-success scan handling
 
@@ -227,14 +244,14 @@ Required direction:
 - [ ] Dry-run mode
 - [ ] Operator approval flow
 
-### Phase N Gate (System Integrity)
+### Quality Gate
 
 - [ ] Test coverage for chain registry
 - [ ] Test coverage for provider factory
 - [ ] Test coverage for scanners
 - [ ] Deterministic normalized outputs
 - [ ] Logging validation
-- [ ] End-to-end multi-chain execution test
+- [ ] End-to-end multi-chain scan test
 
 ## Git Workflow Guardrails
 
