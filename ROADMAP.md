@@ -21,11 +21,74 @@ This file is the source-of-truth context for ongoing work on this project.
 - Execution happens on:
   - Builder machine (development + deployment)
   - Operator machine (monitoring + execution triggers)
-- Runtime configuration remains environment-driven:
-  - `RPC_URL`
+- Runtime configuration remains environment-driven and chain-aware:
+  - `RPC_URL_ETHEREUM`
+  - `RPC_URL_ARBITRUM`
+  - `RPC_URL_BASE`
+  - `RPC_URL_OPTIMISM`
+  - `RPC_URL_POLYGON`
   - `PRIVATE_KEY`
-  - `CHAIN_ID`
+- Initial chain scope is multi-chain from day 1 across selected EVM networks.
 - Code must remain portable across VM, mini PC, and future cloud deployment.
+- The system must support:
+  - chain-specific providers
+  - chain-specific protocol support
+  - normalized cross-chain output
+
+## Supported Chains (v1 Target)
+
+Initial supported chains for v1:
+
+- Ethereum
+- Arbitrum
+- Base
+- Optimism
+- Polygon
+
+Selection criteria:
+
+- strong airdrop / rewards ecosystem
+- low enough cost for practical claiming
+- broad wallet activity and protocol overlap
+- compatible EVM execution model
+- accessible RPC infrastructure
+
+Non-goals for v1:
+
+- non-EVM chains
+- bridge automation
+- cross-chain message execution
+- Solana-specific or Cosmos-specific protocol logic
+
+## Operator Model
+
+This is a two-person system.
+
+### Builder Responsibilities
+
+- design architecture
+- implement scanners
+- implement execution logic
+- define result schemas
+- maintain protocol adapters
+- maintain safety checks
+- maintain documentation and chain support
+
+### Operator Responsibilities
+
+- run scans
+- review outputs
+- validate wallets and opportunities
+- trigger approved execution flows
+- monitor logs and failures
+- report protocol changes and broken claim paths
+
+### Shared Responsibility
+
+- maintain wallet lists
+- decide protocol priorities
+- review profitable opportunities
+- track claimed value and failed attempts
 
 ## Verified Status Snapshot
 
@@ -65,7 +128,17 @@ Implemented core services / modules:
 
 Current system direction:
 
-This project is starting from zero with a clear goal: build a modular scanning and execution system capable of discovering and extracting value from blockchain activity. The immediate focus is establishing a clean architecture with scanners, executors, and shared infrastructure.
+This project is starting from zero with a clear goal: build a modular, chain-aware scanning and execution system capable of discovering and extracting value from blockchain activity across multiple EVM networks from day 1.
+
+The immediate focus is establishing a clean architecture with:
+
+- shared core infrastructure
+- per-chain provider management
+- scanner modules that can execute across multiple chains
+- normalized result models for operator review
+- execution pipelines that remain chain-aware and safety-checked
+
+The first implementation target is not a single-chain prototype. The first implementation target is a production-grade multi-chain base that can scan wallets across selected EVM chains using a unified interface.
 
 ## Git Status And Direction
 
@@ -77,26 +150,27 @@ Current git status:
 
 Required direction:
 
-1. Initialize project structure (core / scanners / executors / utils)
-2. Build wallet scanner (detect ETH + ERC20 balances)
-3. Add airdrop detection logic
-4. Implement execution engine for claiming value
+1. Initialize project structure (core / scanners / executors / utils / config / cli)
+2. Implement chain registry and provider factory
+3. Build multi-chain wallet scanner (native balance + token balance support)
+4. Add protocol adapters for claim/reward discovery
+5. Implement execution engine for safe multi-chain claiming
 
 ## Reality-Checked Phase Status
 
 | Phase | Name | Status | Notes |
 |---|---|---|---|
-| 0 | Foundation | In Progress | Project initialization + architecture setup |
-| 1 | Core Platform | Not Started | Base scanning + RPC integration |
-| 2 | Main Product Surface | Not Started | Airdrop + reward detection |
-| 3 | Stabilization | Not Started | Error handling + retries |
-| 4 | Consumer Contracts | Not Started | Execution + claiming |
-| 5 | Expansion Area A | Not Started | Multi-chain support |
+| 0 | Foundation | In Progress | Project initialization + multi-chain architecture setup |
+| 1 | Core Platform | Not Started | Chain registry, provider factory, wallet scanning, normalized outputs |
+| 2 | Main Product Surface | Not Started | Multi-chain airdrop + reward detection |
+| 3 | Stabilization | Not Started | Error handling, retries, RPC fallback, chain failure isolation |
+| 4 | Consumer Contracts | Not Started | Execution + claiming across supported chains |
+| 5 | Expansion Area A | Not Started | More protocols, more chains, richer adapters |
 | 6 | Expansion Area B | Not Started | MEV / advanced extraction |
-| 7 | Automation / Lifecycle | Not Started | Scheduled scans + automation |
-| 8 | Testing & Data Quality | Not Started | Validation + correctness |
-| 9 | Hardening & Operations | Not Started | Logging + monitoring |
-| 10 | Future / Advanced Work | Not Started | AI-assisted scanning |
+| 7 | Automation / Lifecycle | Not Started | Scheduled scans + recurring execution workflows |
+| 8 | Testing & Data Quality | Not Started | Validation + correctness + chain-specific test coverage |
+| 9 | Hardening & Operations | Not Started | Logging + monitoring + operator controls |
+| 10 | Future / Advanced Work | Not Started | AI-assisted scanning + opportunity ranking |
 
 ## Next Milestone Checklist
 
@@ -105,44 +179,62 @@ Required direction:
 - [ ] Initialize project folder structure
 - [ ] Create `.env.example`
 - [ ] Setup TypeScript + Ethers.js
-- [ ] Build first wallet scanner
-- [ ] Log detected balances
-- [ ] Output results for operator
+- [ ] Define supported chain list for v1
+- [ ] Build chain registry
+- [ ] Build provider factory
+- [ ] Build first multi-chain wallet scanner
+- [ ] Log normalized detected balances
+- [ ] Output chain-grouped results for operator
 
 ### Phase 1 Kickoff (Core Platform)
 
-- [ ] RPC connection layer (Infura)
-- [ ] Wallet scanning module
-- [ ] Token balance detection
+- [ ] Chain registry
+- [ ] Provider factory
+- [ ] RPC configuration validation
+- [ ] Multi-chain wallet scanning module
+- [ ] Native token balance detection per chain
+- [ ] ERC20 token balance detection per chain
+- [ ] Normalized result schema
 - [ ] CLI entry point
+- [ ] Operator-readable output formatter
 
 ### Phase 2 Closure (Main Product Surface)
 
-- [ ] Airdrop detection engine
-- [ ] Known protocol scanning (Uniswap, ENS, etc.)
+- [ ] Multi-chain airdrop detection engine
+- [ ] Known protocol scanning adapters
 - [ ] Reward eligibility detection
-- [ ] Output structured results
+- [ ] Claimability classification
+- [ ] Chain-aware gas-cost estimation
+- [ ] Output structured results grouped by wallet / chain / protocol
 
 ### Phase 3 Stabilization (Reliability Layer)
 
 - [ ] Retry logic
 - [ ] Rate limiting
 - [ ] Error classification
-- [ ] Logging system
+- [ ] Structured logging system
+- [ ] RPC fallback support
+- [ ] Chain failure isolation
+- [ ] Partial-success scan handling
 
 ### Phase 4 Kickoff (Execution Engine)
 
 - [ ] Transaction builder
-- [ ] Claim execution logic
+- [ ] Chain-aware claim execution logic
 - [ ] Gas estimation
+- [ ] Profitability checks
 - [ ] Safe execution checks
+- [ ] Dry-run mode
+- [ ] Operator approval flow
 
 ### Phase N Gate (System Integrity)
 
+- [ ] Test coverage for chain registry
+- [ ] Test coverage for provider factory
 - [ ] Test coverage for scanners
-- [ ] Deterministic outputs
+- [ ] Deterministic normalized outputs
 - [ ] Logging validation
-- [ ] End-to-end execution test
+- [ ] End-to-end multi-chain execution test
 
 ## Git Workflow Guardrails
 
