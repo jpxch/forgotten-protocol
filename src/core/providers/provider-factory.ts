@@ -65,4 +65,14 @@ export class ProviderFactory {
 
     return providerSet.primary;
   }
+
+  public getFallbackProvider(chain: ChainKey): JsonRpcProvider {
+    const providerSet = this.providers.get(chain);
+
+    if (!providerSet) {
+      throw new Error(`Provider not found for chain: ${chain}`);
+    }
+
+    return providerSet.fallback;
+  }
 }

@@ -18,10 +18,8 @@ async function main(): Promise<void> {
   const nativeScanner = new NativeBalanceScanner(providerFactory);
   const erc20Scanner = new Erc20DiscoveryScanner(providerFactory);
 
-  const [nativeResult, tokenResult] = await Promise.all([
-    nativeScanner.scan(wallet),
-    erc20Scanner.scan(wallet),
-  ]);
+  const nativeResult = await nativeScanner.scan(wallet);
+  const tokenResult = await erc20Scanner.scan(wallet);
 
   printNativeResults(nativeResult);
   printTokenResults(tokenResult);
