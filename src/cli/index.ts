@@ -3,7 +3,7 @@ import { WalletScanResult } from '../core/models/balance-result.js';
 import { WalletTokenScanResult } from '../core/models/token-balance-result.js';
 import { ProviderFactory } from '../core/providers/provider-factory.js';
 import { NativeBalanceScanner } from '../scanners/balances/native-balance-scanner.js';
-import { Erc20DiscoveryScanner } from '../scanners/balances/erc20-discovery-scanner.js';
+import { Erc20RegistryScanner } from '../scanners/balances/erc20-registry-scanner.js';
 import { parseArgs } from './parse-args.js';
 
 async function main(): Promise<void> {
@@ -16,7 +16,7 @@ async function main(): Promise<void> {
   const providerFactory = new ProviderFactory();
 
   const nativeScanner = new NativeBalanceScanner(providerFactory);
-  const erc20Scanner = new Erc20DiscoveryScanner(providerFactory);
+  const erc20Scanner = new Erc20RegistryScanner(providerFactory);
 
   const nativeResult = await nativeScanner.scan(wallet);
   const tokenResult = await erc20Scanner.scan(wallet);
