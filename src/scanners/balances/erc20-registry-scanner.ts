@@ -1,4 +1,4 @@
-import { Contract } from 'ethers';
+import { Contract, getAddress } from 'ethers';
 import { TOKEN_REGISTRY } from '../../config/token-registry.js';
 import { ERC20_ABI } from '../../core/abi/erc20.js';
 import { CHAINS, ChainKey } from '../../core/chains/chains.js';
@@ -20,9 +20,17 @@ export class Erc20RegistryScanner {
       const provider = this.providerFactory.getProvider(chainKey);
       const registryEntries = TOKEN_REGISTRY[chainKey];
 
+      console.log(`\nScanning ${chain.name} tokens...`);
+
       for (const entry of registryEntries) {
         try {
-          const tokenContract = new Contract(entry.address, ERC20_ABI, provider);
+          const checksummedAddress = getAddress(entry.address);
+          const tokenContract = new Contract(
+            checksummedAddress,
+            ERC20_ABI,
+            provider
+          );
+
           const rawBalance = (await tokenContract.balanceOf(wallet)) as bigint;
 
           if (rawBalance <= 0n) {
@@ -32,19 +40,24 @@ export class Erc20RegistryScanner {
           tokens.push({
             chain: chain.name,
             chainId: chain.chainId,
-            tokenAddress: entry.address,
+            tokenAddress: checksummedAddress,
             symbol: entry.symbol,
             decimals: entry.decimals,
             rawBalance,
             formattedBalance: formatTokenBalance(rawBalance, entry.decimals)
           });
+
         } catch (error) {
           console.error(
             `Failed token balance lookup on ${chain.name} for ${entry.symbol} (${entry.address}):`,
             error
           );
         }
+
+        await this.sleep(200);
       }
+
+      await this.sleep(1000);
     }
 
     return {
@@ -52,5 +65,9 @@ export class Erc20RegistryScanner {
       timestamp: new Date().toISOString(),
       tokens
     };
+  }
+
+  private async sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

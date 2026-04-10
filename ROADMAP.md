@@ -91,9 +91,9 @@ This is a two-person system.
 
 Validated from the repo and current working tree on 2026-04-09:
 
-- `git status --short`: `?? AGENTS.md`
+- `git status --short`: `M src/cli/index.ts`, `?? src/config/token-registry.ts`, `?? src/core/models/tokens-registry.ts`, `?? src/scanners/balances/erc20-registry-scanner.ts`
 - Active branch: `feature/foundation-multichain-core`
-- Latest commit: `f8ad3ba feat: implement wallet scanning functionality with balance retrieval and CLI argument parsing`
+- Latest commit: `201a63c feat: enhance ERC-20 discovery scanner with fallback provider support and improve scanning efficiency`
 - `.env.example` exists and matches the current multi-chain RPC layout
 - No test runner or test files exist yet
 
@@ -109,6 +109,8 @@ Current runtime verification:
 - CLI bootstrap exists at `src/cli/index.ts`
 - CLI requires `--wallet` and validates the address format
 - Native balance scanner iterates the supported chains and prints balances
+- ERC-20 registry scanner exists and is wired into the CLI output
+- ERC-20 discovery scanner exists but is not wired into the CLI
 - End-to-end runtime against live RPC endpoints was not verified in this review
 
 Implemented APIs / Interfaces:
@@ -119,6 +121,9 @@ Implemented APIs / Interfaces:
 - `ProviderFactory` for per-chain primary and fallback `JsonRpcProvider` construction
 - Zod-based env schema parsing in `src/config/env.ts`
 - `WalletScanResult` and `ChainBalanceResult` in `src/core/models/balance-result.ts`
+- `TokenBalanceResult` and `WalletTokenScanResult` in `src/core/models/token-balance-result.ts`
+- `TokenRegistryEntry` and `TokenRegistry` in `src/core/models/tokens-registry.ts`
+- `ERC20_ABI` in `src/core/abi/erc20.ts`
 
 Implemented core services / modules:
 
@@ -128,14 +133,18 @@ Implemented core services / modules:
 - CLI entry point in `src/cli/index.ts`
 - CLI arg parsing in `src/cli/parse-args.ts`
 - native balance scanner in `src/scanners/balances/native-balance-scanner.ts`
+- ERC-20 discovery scanner in `src/scanners/balances/erc20-discovery-scanner.ts`
+- ERC-20 registry scanner in `src/scanners/balances/erc20-registry-scanner.ts`
+- token registry in `src/config/token-registry.ts`
+- token balance formatting helper in `src/utils/format-token-balance.ts`
 
 Remaining visible gaps:
 
-- no ERC-20 token balance ingestion yet
+- ERC-20 discovery is not wired into the CLI or operator flow
 - no protocol adapters yet
 - no claim execution engine yet
 - no structured logging usage yet, even though `pino` is installed
-- no retry, fallback-selection, or failure-isolation behavior yet (`getProvider` returns primary only)
+- fallback selection is limited; most scans still use the primary provider only
 - no tests, fixtures, or CI validation yet
 
 ## Current System Direction
@@ -147,10 +156,10 @@ The project is no longer at a blank-slate stage. It has a real multi-chain found
 - supported chains are explicitly modeled
 - provider bootstrap is centralized
 - native balance scanning across chains is working
+- ERC-20 balance scanning exists via registry and discovery modes
 
 What is still missing is the actual product surface:
 
-- ERC-20 balance ingestion
 - protocol-specific discovery
 - safe execution flows
 - reliability and observability layers
@@ -162,8 +171,8 @@ The next milestone should extend the existing scan pipeline (ERC-20, protocol ad
 Current git status:
 
 - Active branch: `feature/foundation-multichain-core`
-- Working tree: `?? AGENTS.md`
-- Latest commit before this roadmap refresh: `f8ad3ba feat: implement wallet scanning functionality with balance retrieval and CLI argument parsing`
+- Working tree: `M src/cli/index.ts`, `?? src/config/token-registry.ts`, `?? src/core/models/tokens-registry.ts`, `?? src/scanners/balances/erc20-registry-scanner.ts`
+- Latest commit before this roadmap refresh: `201a63c feat: enhance ERC-20 discovery scanner with fallback provider support and improve scanning efficiency`
 
 Direction from here:
 
@@ -177,7 +186,7 @@ Direction from here:
 | Phase | Name                   | Status      | Notes                                                                                                                |
 | ----- | ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
 | 0     | Foundation             | Complete    | Project scaffold, TypeScript setup, env validation, CLI bootstrap, chain registry, and provider factory are in place |
-| 1     | Core Platform          | In Progress | Native balance scanning and result schema exist; ERC-20 scanning and protocol adapters are missing                   |
+| 1     | Core Platform          | In Progress | Native balance scanning and result schema exist; ERC-20 scanning exists but needs validation and wiring choices      |
 | 2     | Main Product Surface   | Not Started | No airdrop detection, rewards discovery, or claimability logic yet                                                   |
 | 3     | Stabilization          | Not Started | No retry, rate limiting, fallback failover logic, or structured runtime logging yet                                  |
 | 4     | Execution Engine       | Not Started | No transaction builder, gas checks, or claim execution pipeline yet                                                  |
@@ -201,6 +210,7 @@ Direction from here:
 - [x] Build first multi-chain wallet scanner
 - [x] Add normalized scan result schema
 - [x] Log operator-readable scan output
+- [x] Add ERC-20 registry + discovery scanners
 - [ ] Verify scans across all supported chains
 
 ### Phase 1 Completion (Core Platform)
@@ -212,7 +222,7 @@ Direction from here:
 - [ ] Wallet input model
 - [x] Multi-chain wallet scanning module
 - [x] Native token balance detection per chain
-- [ ] ERC-20 token balance detection per chain
+- [x] ERC-20 token balance detection per chain
 - [x] Normalized result schema
 - [x] Operator-readable output formatter
 

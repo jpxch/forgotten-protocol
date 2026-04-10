@@ -4,25 +4,25 @@ export const TOKEN_REGISTRY: TokenRegistry = {
   ethereum: [
     {
       chain: 'ethereum',
-      address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       symbol: 'USDC',
       decimals: 6
     },
     {
       chain: 'ethereum',
-      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+      address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
       symbol: 'USDT',
       decimals: 6
     },
     {
       chain: 'ethereum',
-      address: '0xC02aaA39b223FE8D0A0E5C4F27eAD9083C756Cc2',
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
       symbol: 'WETH',
       decimals: 18
     },
     {
       chain: 'ethereum',
-      address: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+      address: '0x514910771af9ca656af840dff83e8264ecf986ca',
       symbol: 'LINK',
       decimals: 18
     }
@@ -30,13 +30,13 @@ export const TOKEN_REGISTRY: TokenRegistry = {
   arbitrum: [
     {
       chain: 'arbitrum',
-      address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+      address: '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
       symbol: 'USDC',
       decimals: 6
     },
     {
       chain: 'arbitrum',
-      address: '0xFd086bC7CD5C481DCC9C85ebe478A1C0b69FCbb9',
+      address: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
       symbol: 'USDT',
       decimals: 6
     },
@@ -48,7 +48,7 @@ export const TOKEN_REGISTRY: TokenRegistry = {
     },
     {
       chain: 'arbitrum',
-      address: '0x912CE59144191C1204E64559FE8253a0e49E6548',
+      address: '0x912ce59144191c1204e64559fe8253a0e49e6548',
       symbol: 'ARB',
       decimals: 18
     }
@@ -56,13 +56,13 @@ export const TOKEN_REGISTRY: TokenRegistry = {
   optimism: [
     {
       chain: 'optimism',
-      address: '0x0b2C639c533813f4Aa9D7837CaF62653d097Ff85',
+      address: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
       symbol: 'USDC',
       decimals: 6
     },
     {
       chain: 'optimism',
-      address: '0x94b008aA00579c1307B0EF2c499ad98a8ce58e58',
+      address: '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58',
       symbol: 'USDT',
       decimals: 6
     },
@@ -82,7 +82,7 @@ export const TOKEN_REGISTRY: TokenRegistry = {
   base: [
     {
       chain: 'base',
-      address: '0x833589fCD6EDB6E08f4c7C32D4f71b54bdA02913',
+      address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
       symbol: 'USDC',
       decimals: 6
     },
@@ -102,7 +102,7 @@ export const TOKEN_REGISTRY: TokenRegistry = {
     },
     {
       chain: 'polygon',
-      address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
       symbol: 'USDT',
       decimals: 6
     },
