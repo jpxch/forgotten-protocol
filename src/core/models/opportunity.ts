@@ -1,38 +1,38 @@
-import { ChainKey } from "../chains/chains.js";
-import { OpportunityKind } from "./opportunity-kind.js";
-import { OpportunityStatus } from "./opportunity-status.js";
+import { ChainKey } from '../chains/chains.js';
+import { OpportunityKind } from './opportunity-kind.js';
+import { OpportunityStatus } from './opportunity-status.js';
 
 export interface Opportunity {
-    id: string;
-    detectedAt: string;
+  id: string;
+  detectedAt: string;
 
-    chain: ChainKey;
-    protocol: string;
+  chain: ChainKey;
+  protocol: string;
 
-    kind: OpportunityKind;
-    status: OpportunityStatus;
+  kind: OpportunityKind;
+  status: OpportunityStatus;
 
-    targetAccount?: string;
-    targetMarket?: string;
+  targetAccount?: string;
+  targetMarket?: string;
 
-    debtAssetSymbol?: string;
-    debtAssetAddress?: string;
+  debtAssetSymbol?: string;
+  debtAssetAddress?: string;
 
-    collateralAssetSymbol?: string;
-    collateralAssetAddress?: string;
+  collateralAssetSymbol?: string;
+  collateralAssetAddress?: string;
 
-    estimatedRepayAmount?: string;
-    estimatedCollateralOut?: string;
+  estimatedRepayAmount?: string;
+  estimatedCollateralOut?: string;
 
-    estimatedGrossUsd: string;
-    estimatedGasUsd: string;
-    estimatedNetUsd: string;
+  estimatedGrossUsd: string;
+  estimatedGasUsd: string;
+  estimatedNetUsd: string;
 
-    requiredFlashLoan: boolean;
-    flashLoanSource?: string;
+  requiredFlashLoan: boolean;
+  flashLoanSource?: string;
 
-    confidence: number;
-    lastCheckedBlock: number;
+  confidence: number;
+  lastCheckedBlock: number;
 
-    notes: string[];
+  notes: string[];
 }
