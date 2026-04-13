@@ -124,15 +124,12 @@ Required direction:
 
 ### Phase 1 Kickoff (Core Platform)
 
-- [ ] Create final project structure:
-  - `src/core`
-  - `src/scanners`
-  - `src/executors`
-  - `src/utils`
-  - `src/types`
-- [ ] Introduce a canonical chain registry and provider factory
-- [ ] Introduce a canonical `ScanResult` type shared across all scanners
-- [ ] Verify that every supported chain can run through the same scan pipeline
+- [ ] Promote `Opportunity` to a first-class core model
+- [ ] Add protocol scanner contract under `src/scanners/protocols/`
+- [ ] Implement first protocol-specific scanner for Aave V3 liquidation detection
+- [ ] Add profitability estimation under `src/simulations/`
+- [ ] Add CLI command for opportunity scanning
+- [ ] Emit operator-grade ranked opportunity reports for Jorge
 
 ### Phase 2 Closure (Main Product Surface)
 
