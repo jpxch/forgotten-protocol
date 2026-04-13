@@ -5,6 +5,7 @@ import { ProviderFactory } from '../core/providers/provider-factory.js';
 import { NativeBalanceScanner } from '../scanners/balances/native-balance-scanner.js';
 import { Erc20RegistryScanner } from '../scanners/balances/erc20-registry-scanner.js';
 import { parseArgs } from './parse-args.js';
+import { classifyToken } from '../core/classifiers/token-classifier.js';
 
 async function main(): Promise<void> {
   console.log('Forgotten Protocol CLI starting...');
@@ -49,7 +50,11 @@ function printTokenResults(result: WalletTokenScanResult): void {
   for (const [chain, tokens] of Object.entries(groupedByChain)) {
     console.log(`${chain}`);
     for (const token of tokens) {
-      console.log(`  ${token.symbol} (${token.tokenAddress}) → ${token.formattedBalance}`);
+      const classification = classifyToken(token.symbol, Number(token.formattedBalance));
+
+      console.log(
+        `  ${token.symbol} (${token.tokenAddress}) → ${token.formattedBalance} [${classification}]`,
+      );
     }
     console.log('');
   }
