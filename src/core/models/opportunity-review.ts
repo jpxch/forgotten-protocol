@@ -3,7 +3,7 @@ export const OPPORTUNITY_PRIORITIES = ['critical', 'high', 'medium', 'low'] as c
 export type OpportunityPriority = (typeof OPPORTUNITY_PRIORITIES)[number];
 
 export const OPPORTUNITY_RECOMMENDED_ACTIONS = [
-  'exexute_now',
+  'execute_now',
   'rescan_soon',
   'needs_manual_review',
   'skip',
